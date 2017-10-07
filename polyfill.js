@@ -26,7 +26,7 @@
 
     return function bound(/*...parameters*/) {
       for (var j = 0; j < arguments.length; ++j) {
-        parameters[i+j] = arguments[j];
+        parameters[parameters.length] = arguments[j];
       }
       return _apply(fn, object, parameters);
     };
