@@ -33,11 +33,11 @@
   };
 
   function _apply(fn, object, parameters) {
-    var i, symbol, parameterList = [];
+    var i, result, symbol, parameterList = [];
 
     object = Object(object);
 
-    // Find unused property, use illigal identifer to narrow the search
+    // Find unused property, use illegal identifer to narrow the search
     for (symbol = "%%"; symbol in object; symbol = "%%" + random());
 
     // Build list of parameters
@@ -45,12 +45,11 @@
       parameterList[i] = "parameters[" + i + "]";
     }
 
-    try {
-      object[symbol] = fn;
-      return eval("object[symbol](" + _join(parameterList, ", ") + ")");
-    } finally {
-      delete object[symbol];
-    }
+    object[symbol] = fn;
+    result = eval("object[symbol](" + _join(parameterList, ", ") + ")");
+    delete object[symbol];
+    
+    return result
   }
 
   /**
