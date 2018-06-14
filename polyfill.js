@@ -1,36 +1,45 @@
-(function(Object, Function, random) {
-  Function.prototype.apply = Function.prototype.apply ||
-  function apply(object, parameters) {
-    return _apply(this, object, parameters);
-  };
-
-
-  Function.prototype.call = Function.prototype.call ||
-  function call(object /*...parameters*/) {
-    var i, parameters = [];
-
-    for (i = 0; i < arguments.length; ++i) {
-      parameters[parameters.length] = arguments[i];
-    }
-
-    return _apply(this, object, parameters);
-  };
-
-  Function.prototype.bind = Function.prototype.bind ||
-  function bind(object /*...parameters*/) {
-    var i, fn = this, parameters = [];
-
-    for (i = 0; i < arguments.length; ++i) {
-      parameters[parameters.length] = arguments[i];
-    }
-
-    return function bound(/*...parameters*/) {
-      for (var j = 0; j < arguments.length; ++j) {
-        parameters[parameters.length] = arguments[j];
-      }
-      return _apply(fn, object, parameters);
+function __init_function_polyfill(Object, Function, random) {
+  if (!Function.prototype.apply) {
+    function apply(object, parameters) {
+      return _apply(this, object, parameters);
     };
-  };
+    Function.prototype.apply = apply;
+    apply = null;
+  }
+
+  if (!Function.prototype.call) {
+    function call(object /*...parameters*/) {
+      var i, parameters = [];
+
+      for (i = 0; i < arguments.length; ++i) {
+        parameters[parameters.length] = arguments[i];
+      }
+
+      return _apply(this, object, parameters);
+    };
+    Function.prototype.call = call;
+    call = null;
+  }
+
+  if (!Function.prototype.bind) {
+    function bind(object /*...parameters*/) {
+      var i, fn = this, parameters = [];
+
+      for (i = 0; i < arguments.length; ++i) {
+        parameters[parameters.length] = arguments[i];
+      }
+
+      function bound(/*...parameters*/) {
+        for (var j = 0; j < arguments.length; ++j) {
+          parameters[parameters.length] = arguments[j];
+        }
+        return _apply(fn, object, parameters);
+      };
+      return bound
+    };
+    Function.prototype.bind = bind;
+    bind = null;
+  }
 
   function _apply(fn, object, parameters) {
     var i, result, symbol, parameterList = [];
@@ -48,13 +57,13 @@
     object[symbol] = fn;
     result = eval("object[symbol](" + _join(parameterList, ", ") + ")");
     delete object[symbol];
-    
+
     return result
   }
 
   /**
-  * O(n log n) string concatenation
-  */
+   * O(n log n) string concatenation
+   */
   function _join(strings, seperator) {
     if (strings.length === 0) return "";
     if (strings.length === 1) return "" + strings[0];
@@ -80,4 +89,7 @@
 
     return output[0];
   }
-})(Object, Function, Math.random);
+}
+__init_function_polyfill(Object, Function, Math.random)
+__init_function_polyfill = null
+delete __init_function_polyfill
